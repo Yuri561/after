@@ -1,0 +1,54 @@
+[
+  {
+    "$schema": "https://schema.tauri.app/capabilities/v1",
+    "identifier": "main-capability",
+    "description": "Permissions for AFTER (dialogs, fs, path, devtools)",
+    "platforms": ["windows"],
+    "permissions": [
+      "core:default",
+      "core:webview:default",
+      "core:webview:allow-internal-toggle-devtools",
+
+      "dialog:default",
+      "dialog:allow-open",
+
+      "path:default",
+      "opener:default",
+
+      {
+        "fs": {
+          "read-dir": [
+            "$DOCUMENT/**",
+            "$DESKTOP/**",
+            "$DOWNLOAD/**",
+            "$HOME/OneDrive/Documents/**",
+            "$HOME/OneDrive/Documents/ArkVault/**"
+          ],
+          "read-file": [
+            "$DOCUMENT/**",
+            "$DESKTOP/**",
+            "$DOWNLOAD/**",
+            "$HOME/OneDrive/Documents/**",
+            "$HOME/OneDrive/Documents/ArkVault/**"
+          ],
+          "write-file": [
+            "$DOCUMENT/**",
+            "$HOME/OneDrive/Documents/ArkVault/**"
+          ],
+          "create-dir": [
+            "$DOCUMENT/**",
+            "$HOME/OneDrive/Documents/ArkVault/**"
+          ],
+          "exists": [
+            "$DOCUMENT/**",
+            "$HOME/OneDrive/Documents/ArkVault/**"
+          ],
+          "mkdir": [
+            "$DOCUMENT/**",
+            "$HOME/OneDrive/Documents/ArkVault/**"
+          ]
+        }
+      }
+    ]
+  }
+]
