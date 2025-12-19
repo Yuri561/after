@@ -12,10 +12,9 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesQueued }) => {
   const [uploaded, setUploaded] = useState(false);
   const [error, setError] = useState(false);
 
-  // Hidden input for folder picking
+
   const folderInput = useRef<HTMLInputElement>(null);
 
-  // Trigger native selector
   const chooseFolder = () => {
     folderInput.current?.click();
   };
@@ -27,8 +26,6 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesQueued }) => {
 
     const fileArray = Array.from(files);
     onFilesQueued?.(fileArray);
-
-    // Animation feedback
     setUploaded(true);
     setTimeout(() => setUploaded(false), 3000);
 
