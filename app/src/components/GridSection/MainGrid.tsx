@@ -7,6 +7,8 @@ import WatcherMode from "./WatcherMode";
 import SystemMetrics from "./SystemMetrics";
 import StorageMap from "./StorageMap";
 import { Upload } from "lucide-react";
+import VaultRules from "./VaultRules";
+import TransferControls from "./TransferControls";
 
 
 const STORAGE_KEY = "AFTER_APP_QUEUE_v1";
@@ -70,13 +72,15 @@ const MainGrid: React.FC<{ loading: boolean }> = () => {
 
 
   return (
-    <section className="flex-1 grid grid-cols-2 md:grid-cols-4 sm:grid-cols-2 grid-rows-3 gap-3 p-2 sm:p-6">
+    <section className="flex-1 grid grid-cols-2 md:grid-cols-4 sm:grid-cols-2 grid-rows-2 gap-6 p-2 sm:p-8">
       <DropZone onFilesQueued={handleFileQue}/>
       <TransferQueue transfers={transferQueue} setTransfers={setTransferQueue}/>
+      <VaultRules/>
       <SystemMetrics/>
+      <TransferControls/>
+      <WatcherMode/>
       <StorageMap/>
       <Ai/>
-      <WatcherMode/>
     </section>
   );
 };

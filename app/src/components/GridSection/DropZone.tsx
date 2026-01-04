@@ -1,43 +1,43 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { UploadCloud, FileCheck, AlertTriangle } from "lucide-react";
 import { listen } from "@tauri-apps/api/event";
+import { open } from "@tauri-apps/plugin-dialog";
 
 interface DropZoneProps {
-  onFilesQueued?: (files: (File | string)[]) => void;
+  onFilesQueued?: (paths: string[]) => void;
 }
 
 const DropZone: React.FC<DropZoneProps> = ({ onFilesQueued }) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [uploading] = useState(false);
   const [uploaded, setUploaded] = useState(false);
   const [error, setError] = useState(false);
 
+  const chooseFolder = async () => {
+    try {
+      const result = await open({
+        title: "Select a folder",
+        directory: true,
+        multiple: false,
+      });
 
-  const folderInput = useRef<HTMLInputElement>(null);
+      if (!result) return;
 
-  const chooseFolder = () => {
-    folderInput.current?.click();
+      const path = Array.isArray(result) ? result[0] : result;
+      onFilesQueued?.([path]);
+
+      setUploaded(true);
+      setTimeout(() => setUploaded(false), 3000);
+    } catch (err) {
+      console.error("Dialog error:", err);
+      setError(true);
+      setTimeout(() => setError(false), 3000);
+    }
   };
 
-  // User selects a folder
-  const handleFolderSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    const fileArray = Array.from(files);
-    onFilesQueued?.(fileArray);
-    setUploaded(true);
-    setTimeout(() => setUploaded(false), 3000);
-
-    // Allow same folder reselect
-    e.target.value = "";
-  };
-
-  // Listen for drag/drop events from Tauri
   useEffect(() => {
-    const unlisten = listen("tauri://file-drop", (event) => {
+    const unlistenPromise = listen("tauri://file-drop", (event) => {
       const paths = event.payload as string[];
-      if (!paths || paths.length === 0) return;
+      if (!paths?.length) return;
 
       onFilesQueued?.(paths);
 
@@ -46,37 +46,22 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesQueued }) => {
     });
 
     return () => {
-      unlisten.then((fn) => fn());
+      unlistenPromise.then((unlisten) => unlisten());
     };
-  }, []);
+  }, [onFilesQueued]);
 
   return (
     <div
-      className={`col-span-3 md:col-span-2 sm:col-span-2 row-span-2 rounded-2xl border transition-all duration-500
+      className={`col-span-1 row-span-1 rounded-2xl border transition-all duration-500
       bg-gradient-to-br from-slate-900/60 via-cyan-900/10 to-slate-800/40 backdrop-blur-lg
-      p-6 flex flex-col items-center justify-center shadow-[0_0_25px_rgba(0,255,255,0.05)]
-      ${
-        isDragging
-          ? "border-cyan-400/60 shadow-[0_0_25px_rgba(0,255,255,0.4)] scale-[1.02]"
-          : "border-cyan-400/10 hover:border-cyan-400/30 hover:shadow-[0_0_25px_rgba(0,255,255,0.2)]"
-      }`}
+      p-3 flex flex-col items-center justify-center shadow-[0_0_25px_rgba(0,255,255,0.05)]
+      border-cyan-400/10 hover:border-cyan-400/30 hover:shadow-[0_0_25px_rgba(0,255,255,0.2)]`}
     >
-      {/* Hidden folder picker */}
-      <input
-        type="file"
-        ref={folderInput}
-        {...({ webkitdirectory: "true" } as any)}
-        directory=""
-        multiple
-        className="hidden"
-        onChange={handleFolderSelect}
-      />
-
-      <h2 className="text-cyan-400 text-4xl font-light tracking-widest mb-6 select-none">
+      <h2 className="text-cyan-400 text-2xl font-light tracking-widest mb-3 select-none">
         Drop Zone
       </h2>
 
-      <div className="relative w-52 h-52 flex items-center justify-center">
+      <div className="relative w-40 h-40 flex items-center justify-center">
         <div className="absolute inset-0 rounded-full border-[2px] border-cyan-400/20 animate-[spin_20s_linear_infinite]" />
         <div className="absolute inset-2 rounded-full border-[2px] border-cyan-400/40 animate-[spin_12s_linear_reverse_infinite]" />
 
@@ -93,32 +78,29 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesQueued }) => {
               : "bg-cyan-400/5 border-cyan-400/20"
           }`}
         >
-          {uploading ? (
+          {uploaded ? (
             <>
-              <UploadCloud className="text-cyan-300 animate-bounce mb-2" size={32} />
-              <span className="text-sm text-cyan-300 animate-pulse">Uploading...</span>
-            </>
-          ) : uploaded ? (
-            <>
-              <FileCheck className="text-green-400 mb-2" size={32} />
-              <span className="text-green-400 text-sm">Upload Complete!</span>
+              <FileCheck className="text-green-400 mb-2" size={28} />
+              <span className="text-green-400 text-xs">Queued</span>
             </>
           ) : error ? (
             <>
-              <AlertTriangle className="text-red-400 mb-2" size={32} />
-              <span className="text-red-400 text-sm">Upload Failed</span>
+              <AlertTriangle className="text-red-400 mb-2" size={28} />
+              <span className="text-red-400 text-xs">Error</span>
             </>
           ) : (
             <>
-              <UploadCloud className="text-cyan-400/80 mb-2" size={34} />
-              <span className="text-sm font-mono text-cyan-400/70">DROP FOLDERS</span>
+              <UploadCloud className="text-cyan-400/80 mb-2" size={30} />
+              <span className="text-xs font-mono text-cyan-400/70">
+                CLICK TO SELECT
+              </span>
             </>
           )}
         </div>
       </div>
 
-      <p className="mt-6 text-[0.7rem] text-cyan-400/60 font-mono tracking-widest uppercase">
-        Supported: PDF, ZIP, Folders
+      <p className="mt-4 text-[0.65rem] text-cyan-400/60 font-mono tracking-widest uppercase">
+        Folders only (paths)
       </p>
     </div>
   );

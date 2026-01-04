@@ -10,29 +10,22 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "security": {
+      "csp": null,
+      "capabilities": ["default"]
+    },
     "windows": [
       {
+        "label": "main",
         "title": "A.F.T.E.R",
-        "width": 1280,
-        "height": 800,
-        "resizable": true,
-        "fullscreen": false,
+        "width": 1400,
+        "height": 1024,
         "dragDropEnabled": true
       }
-    ],
-    "security": {
-      "csp": null
-    }
+    ]
   },
   "bundle": {
     "active": true,
-    "targets": "all",
-    "icon": [
-      "icons/logo.ico",
-      "icons/logo.ico",
-      "icons/logo.ico",
-      "icons/logo.ico",
-      "icons/logo.ico"
-    ]
+    "targets": "all"
   }
 }

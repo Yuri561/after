@@ -1,17 +1,15 @@
 #FastAPI entry point 
+from routes.vault_route import router as vault_route
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import system
+from routes.system import router as system_router
 import os
 
 port = os.getenv("APP_PORT")
 host = os.getenv("APP_HOST")
 app = FastAPI()
 
-cors_option = [
-    "http://localhost:1420",
-    "http://localhost:5173"
-]
+cors_option = ["http://localhost:1420", "http://localhost:5173"]
 
 app.add_middleware(
         CORSMiddleware,
@@ -21,7 +19,8 @@ app.add_middleware(
         allow_headers=["*"],     
     )
 #system load route
-app.include_router(system.router)
+app.include_router(system_router, prefix="/api")
+app.include_router(vault_route, prefix="/transfer")
 
 @app.get("/")
 async def root():

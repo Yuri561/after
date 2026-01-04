@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Settings, Sliders, Shield, Bell, Wifi, Monitor, Cpu, Info } from "lucide-react"
+import { Settings, Shield, Bell, Wifi, Monitor, Cpu, Info } from "lucide-react"
 import Switch from "@mui/material/Switch"
 
 const SettingsPage: React.FC = () => {
@@ -125,7 +125,7 @@ const SettingsPage: React.FC = () => {
             <Info size={14} /> About F.A.T.E
           </h3>
           <p className="text-cyan-300/70 text-[0.75rem] leading-relaxed">
-            F.A.T.E (File Arrangement & Transfer Engine) is a modular system for managing and automating
+            A.F.T.E.R (Automated File Transfer Engine & Repository) is a modular system for managing and automating
             file organization, synchronization, and encryption across local and cloud environments.
           </p>
           <p className="text-cyan-400/60 text-[0.7rem] mt-3">Build: 2025.10.08 • Engine: React + Tauri</p>

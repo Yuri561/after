@@ -10,7 +10,7 @@ const WatcherMode: React.FC = () => {
 
   return (
     <div
-      className={`col-span-3 sm:col-span-2 rounded-2xl border transition-all duration-500 
+      className={`col-span-1 sm:col-span-1 rounded-2xl border transition-all duration-500 
       bg-gradient-to-br from-slate-900/60 via-cyan-900/10 to-slate-800/40 backdrop-blur-lg p-5 font-mono text-sm shadow-[0_0_25px_rgba(0,255,255,0.06)]
       ${
         active

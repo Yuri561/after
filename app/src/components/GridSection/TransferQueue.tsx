@@ -1,8 +1,8 @@
 import React, { useEffect, useState, type JSX } from "react";
 import { Upload } from "lucide-react";
 import Checkbox from "@mui/material/Checkbox";
-import { scanFolder } from "../../Helpers/scanFolder";
-import {  mkdir, copyFile } from "@tauri-apps/plugin-fs";
+
+
 import { emit } from "@tauri-apps/api/event";
 interface TransferItem {
   name: string;
@@ -56,53 +56,54 @@ const TransferQueue: React.FC<TransferQueueProps> = ({
   };
 
   const handleSendToVault = async (path: string) => {
-    if (!path || !selectedFiles.includes(path)) return;
 
-    const scannedFiles = await scanFolder(path);
-    if (!scannedFiles || scannedFiles.length === 0) return;
+    // if (!path || !selectedFiles.includes(path)) return;
 
-    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp"];
-    const videoExtensions = ["mp4", "avi", "mov", "wmv"];
-    const audioExtensions = ["mp3", "wav", "aac", "flac"];
-    const documentExtensions = ["pdf", "docx", "xlsx", "pptx"];
-    const otherExtensions = ["zip", "rar", "7z"];
+    // const scannedFiles = await scanFolder(path);
+    // if (!scannedFiles || scannedFiles.length === 0) return;
 
-    const validExtensions = [
-      ...imageExtensions,
-      ...videoExtensions,
-      ...audioExtensions,
-      ...documentExtensions,
-      ...otherExtensions,
-    ];
+    // const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp"];
+    // const videoExtensions = ["mp4", "avi", "mov", "wmv"];
+    // const audioExtensions = ["mp3", "wav", "aac", "flac"];
+    // const documentExtensions = ["pdf", "docx", "xlsx", "pptx"];
+    // const otherExtensions = ["zip", "rar", "7z"];
 
-    for (const file of scannedFiles) {
-      const extensionCheck = file.name.split(".").pop()?.toLowerCase();
-      if (!extensionCheck || !validExtensions.includes(extensionCheck)) continue;
+    // const validExtensions = [
+    //   ...imageExtensions,
+    //   ...videoExtensions,
+    //   ...audioExtensions,
+    //   ...documentExtensions,
+    //   ...otherExtensions,
+    // ];
+// "$schema": "../gen/schemas/desktop-schema.json",
+    // for (const file of scannedFiles) {
+    //   const extensionCheck = file.name.split(".").pop()?.toLowerCase();
+    //   if (!extensionCheck || !validExtensions.includes(extensionCheck)) continue;
 
-      const categoryFolder =
-        extensionCheck === "zip"
-          ? "Other"
-          : imageExtensions.includes(extensionCheck)
-          ? "Images"
-          : videoExtensions.includes(extensionCheck)
-          ? "Videos"
-          : audioExtensions.includes(extensionCheck)
-          ? "Audio"
-          : documentExtensions.includes(extensionCheck)
-          ? "Documents"
-          : "Other";
+    //   const categoryFolder =
+    //     extensionCheck === "zip"
+    //       ? "Other"
+    //       : imageExtensions.includes(extensionCheck)
+    //       ? "Images"
+    //       : videoExtensions.includes(extensionCheck)
+    //       ? "Videos"
+    //       : audioExtensions.includes(extensionCheck)
+    //       ? "Audio"
+    //       : documentExtensions.includes(extensionCheck)
+    //       ? "Documents"
+    //       : "Other";
 
-      const vaultFolders = `ArkVault/${categoryFolder}`;
+    //   const vaultFolders = `ArkVault/${categoryFolder}`;
 
-      await mkdir(vaultFolders, {
-        recursive: true,
-      });
+    //   await mkdir(vaultFolders, {
+    //     recursive: true,
+    //   });
 
-      const destination = `${vaultFolders}/${file.name}`;
-      await copyFile(file.path, destination);
-    }
+    //   const destination = `${vaultFolders}/${file.name}`;
+    //   await copyFile(file.path, destination);
+    // }
 
-    console.log(`Sending ${path} to vault...`);
+    // console.log(`Sending ${path} to vault...`);
   };
 
   const handleRemoveFolder = (path: string) => {
@@ -113,25 +114,25 @@ const TransferQueue: React.FC<TransferQueueProps> = ({
   };
 
   return (
-    <div className="col-span-2 rounded-2xl border max-h-[350px] overflow-y-auto border-cyan-400/10 bg-gradient-to-br from-slate-900/60 via-cyan-900/10 to-slate-800/40 backdrop-blur-lg p-5 font-mono text-sm text-cyan-100/80 shadow-[0_0_25px_rgba(0,255,255,0.06)] transition-all duration-500 hover:shadow-[0_0_25px_rgba(0,255,255,0.25)]">
+    <div className="ccol-span-1 sm:col-span-1 rounded-2xl border border-cyan-400/10 bg-gradient-to-br from-slate-900/60 via-cyan-900/10 to-slate-800/40 backdrop-blur-lg p-5 font-mono text-sm text-cyan-100/80 shadow-[0_0_25px_rgba(0,255,255,0.06)] transition-all duration-500 hover:shadow-[0_0_25px_rgba(0,255,255,0.15)]">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-cyan-400 text-sm tracking-wide font-semibold flex items-center gap-2">
-          <Upload className="text-cyan-400" size={14} />
+          <Upload className="text-cyan-400" size={10} />
           Transfer Queue
         </h3>
 
         <button
           onClick={() => selectedFiles.forEach((p) => handleRemoveFolder(p))}
-          className="bg-red-600 px-3 py-1 rounded-md cursor-pointer border border-red-400/50 text-red-200 hover:bg-red-600/30 transition"
+          className="bg-red-600 px-2 py-1 rounded-md cursor-pointer border border-red-400/50 text-red-200 hover:bg-red-600/30 transition"
         >
           Remove Folder
         </button>
       </div>
 
       {transfers.length === 0 && (
-        <div className="flex flex-col items-center gap-2 opacity-70 justify-center py-8 text-cyan-400/50 text-xs font-mono">
-          <Upload size={18} className="text-cyan-400" />
+        <div className="flex flex-col items-center gap-2 opacity-70 justify-center py-5 text-cyan-400/50 text-xs font-mono">
+          <Upload size={12} className="text-cyan-400" />
           <span>No files in queue yet</span>
         </div>
       )}
@@ -146,8 +147,8 @@ const TransferQueue: React.FC<TransferQueueProps> = ({
                 : "bg-gradient-to-r from-cyan-400/5 to-transparent hover:from-cyan-400/10"
             }`}
           >
-            <div className="flex justify-between items-center mb-1 text-[0.75rem]">
-              <div className="flex items-center p-4 gap-2 text-cyan-200/90">
+            <div className="flex justify-between items-center mb-1 sm:text-[0.50rem] lg:text-[0.70rem]">
+              <div className="flex items-center sm:p-2 gap-2 text-cyan-200/90">
                 <Checkbox
                   value={t.path}
                   checked={selectedFiles.includes(t.path)}
@@ -155,7 +156,7 @@ const TransferQueue: React.FC<TransferQueueProps> = ({
                 />
 
                 <span className="text-cyan-300">{t.icon}</span>
-                <span className="truncate max-w-[11rem]">{t.name}</span>
+                <span className="truncate max-w-[10rem]">{t.name}</span>
               </div>
 
               <span
