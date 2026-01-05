@@ -9,7 +9,7 @@ def get_desktop_folder():
     return Path.home() / "Desktop"
 
 def create_vault():
-    vault_root = get_desktop_folder() / "A.F.T.E.R"
+    vault_root = get_desktop_folder() / "A.F.T.E.R" #create vault folder on desktop
     os.makedirs(vault_root, exist_ok=True)
     subfolders = ["images", "documents", "videos", "audios", "others"]
     for folder in subfolders:

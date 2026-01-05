@@ -1,7 +1,9 @@
 import os
 import shutil
 from pathlib import Path
-from typing import Dict, List, Literal, Any, Tuple
+from typing import Dict, List, Literal, Any
+from utils.scanner import transfered_folder
+from utils.vault import create_vault as vault
 
 TransferMode = Literal["copy", "move"]
 
@@ -9,9 +11,6 @@ def _ensure_dir(path: str) -> None:
     os.makedirs(path, exist_ok=True)
 
 def _unique_destination(dest_dir: str, filename: str) -> str:
-    """
-    If dest exists, generate: name (1).ext, name (2).ext, ...
-    """
     base, ext = os.path.splitext(filename)
     candidate = os.path.join(dest_dir, filename)
 
@@ -27,10 +26,6 @@ def _unique_destination(dest_dir: str, filename: str) -> str:
         i += 1
 
 def _transfer_one(src: str, dest: str, mode: TransferMode) -> None:
-    """
-    copy -> preserves metadata (copy2)
-    move -> shutil.move
-    """
     if mode == "copy":
         shutil.copy2(src, dest)
     else:
@@ -43,21 +38,7 @@ def transfer_to_vault(
     preserve_structure: bool = False,
     dry_run: bool = False,
 ) -> Dict[str, Any]:
-    """
-    Moves/copies scanned files into vault subfolders.
 
-    scan_result keys expected: images, documents, videos, audios, others
-    vault_info expected: { vault_root: <str|Path>, subfolder_paths: {images: ..., ...} }
-
-    preserve_structure:
-      - False: dumps files directly into category folder
-      - True: recreates relative structure under category folder based on scan_result["source_path"]
-
-    dry_run:
-      - True: no filesystem changes, only builds report
-    """
-
-    # Normalize vault paths
     vault_root = str(vault_info["vault_root"])
     subfolder_paths = vault_info["subfolder_paths"]
 
@@ -76,11 +57,10 @@ def transfer_to_vault(
         "moved": 0,
         "copied": 0,
         "skipped": 0,
-        "errors": [],  # list of {file, reason}
-        "items": [],   # list of {src, dest, category, action}
+        "errors": [],
+        "items": [],
     }
 
-    # Ensure vault dirs exist
     if not dry_run:
         _ensure_dir(vault_root)
         for c in categories:
@@ -98,10 +78,8 @@ def transfer_to_vault(
                     report["errors"].append({"file": src, "reason": "Source not found"})
                     continue
 
-                # Decide destination folder
                 dest_dir = dest_base
 
-                # Optionally preserve structure under category folder
                 if preserve_structure and source_root_norm:
                     src_norm = os.path.normpath(src)
                     try:
@@ -110,7 +88,6 @@ def transfer_to_vault(
                         if rel_dir:
                             dest_dir = os.path.join(dest_base, rel_dir)
                     except ValueError:
-                        # If relpath fails for any reason, just dump into category folder
                         dest_dir = dest_base
 
                 filename = os.path.basename(src)
@@ -135,4 +112,52 @@ def transfer_to_vault(
 
     report["success"] = len(report["errors"]) == 0
     report["total_files"] = sum(report["totals"].values())
+
+    print("\n================= VAULT TARGET =================")
+    print("VAULT ROOT:", report["vault_root"])
+    for c in categories:
+        print(f" - {c}: {subfolder_paths[c]}")
+    print("===============================================\n")
+
+    print("================= TRANSFER SUMMARY =================")
+    print(f"SOURCE: {report['source_path']}")
+    print(f"MODE: {report['mode']} | DRY_RUN: {report['dry_run']} | PRESERVE_STRUCTURE: {report['preserve_structure']}")
+    print(f"TOTAL FILES: {report['total_files']}")
+    print(f"COPIED: {report['copied']} | MOVED: {report['moved']} | SKIPPED: {report['skipped']}")
+    print(f"ERRORS: {len(report['errors'])}")
+
+    if report["items"]:
+        print("\nFIRST 10 TRANSFERS:")
+        for item in report["items"][:10]:
+            print(f" [{item['category']}] {item['action'].upper()}")
+            print(f"   SRC : {item['src']}")
+            print(f"   DEST: {item['dest']}")
+
+    if report["errors"]:
+        print("\nFIRST 5 ERRORS:")
+        for err in report["errors"][:5]:
+            print(" -", err)
+
+    print("====================================================\n")
+
     return report
+
+
+if __name__ == "__main__":
+    source_path = "C:/Users/hoube/OneDrive/Desktop/testing"
+
+    # 1) scan (build scan_result dict)
+    scan_result = transfered_folder(source_path)
+
+    # 2) create/get vault (build vault_info dict)
+    vault_info = vault()
+
+    # 3) test first with dry run (no changes)
+    print("\n DRY RUN FIRST (no files copied yet)...")
+    transfer_to_vault(scan_result, vault_info, mode="copy", dry_run=True)
+
+    # 4) real run
+    print("\n REAL RUN (files will copy now)...")
+    report = transfer_to_vault(scan_result, vault_info, mode="copy", dry_run=False)
+
+    print("DONE. success =", report["success"])

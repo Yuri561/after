@@ -26,6 +26,31 @@ def transfered_folder(path:str):
                     audios.append(os.path.join(dirpath, file))
                 else:
                     others.append(os.path.join(dirpath, file))  
+
+    print("\n================= SCAN RESULT =================")
+    print("SOURCE:", path)
+    print("TOTAL FILES:", len(images) + len(documents) + len(videos) + len(audios) + len(others))
+
+    def show(cat_name, files):
+        print(f"\n--- {cat_name.upper()} ({len(files)}) ---")
+        for f in files:
+            name = os.path.basename(f)
+            ext = os.path.splitext(name)[1].lower() or "[no ext]"
+            rel = os.path.relpath(f, path)  # subdirectory inside the source folder
+            # destination path preview under ArkVault (adjust vault root if needed)
+            dst = os.path.join("ark_vault", cat_name, name)
+            print(f"• {name}  | ext={ext}")
+            print(f"   src_subdir: {rel}")
+            print(f"   dst_in_vault: {dst}")
+
+    show("images", images)
+    show("documents", documents)
+    show("videos", videos)
+    show("audios", audios)
+    show("others", others)
+
+    print("\n================================================\n")
+
     #we want to return a dictionary with the categorized files
     return {
         "source_path": path,
@@ -38,7 +63,7 @@ def transfered_folder(path:str):
     }
 
 if __name__ == "__main__":
-    path = "C:/Users/hoube/OneDrive/Documents/"
+    path = "C:/Users/hoube/OneDrive/Desktop/testing"
     result = transfered_folder(path)
     print(result)
 
