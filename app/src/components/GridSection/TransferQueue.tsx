@@ -21,11 +21,13 @@ const TransferQueue: React.FC<TransferQueueProps> = ({
   setTransfers,
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+  const [sending, setSending] = useState<Record<string, boolean>>({});
 
 
-  
+
+
   useEffect(() => {
-    
+
     const emitFunc = async () => {
       await emit("vault_updated");
     }
@@ -54,58 +56,45 @@ const TransferQueue: React.FC<TransferQueueProps> = ({
         : [...prev, clicked]
     );
   };
+  const API_BASE = "http://127.0.0.1:8000"; // change port to your env port
 
   const handleSendToVault = async (path: string) => {
+    if (!path) return;
 
-    // if (!path || !selectedFiles.includes(path)) return;
+    try {
+      setSending((prev) => ({ ...prev, [path]: true }));
 
-    // const scannedFiles = await scanFolder(path);
-    // if (!scannedFiles || scannedFiles.length === 0) return;
+      const res = await fetch(`${API_BASE}/transfer/api/vault`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source_path: path,
+          mode: "copy",
+          preserve_structure: false,
+          dry_run: false,
+          items_limit: 25,
+        }),
+      });
 
-    // const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp"];
-    // const videoExtensions = ["mp4", "avi", "mov", "wmv"];
-    // const audioExtensions = ["mp3", "wav", "aac", "flac"];
-    // const documentExtensions = ["pdf", "docx", "xlsx", "pptx"];
-    // const otherExtensions = ["zip", "rar", "7z"];
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.detail || `Request failed: ${res.status}`);
+      }
 
-    // const validExtensions = [
-    //   ...imageExtensions,
-    //   ...videoExtensions,
-    //   ...audioExtensions,
-    //   ...documentExtensions,
-    //   ...otherExtensions,
-    // ];
-// "$schema": "../gen/schemas/desktop-schema.json",
-    // for (const file of scannedFiles) {
-    //   const extensionCheck = file.name.split(".").pop()?.toLowerCase();
-    //   if (!extensionCheck || !validExtensions.includes(extensionCheck)) continue;
+      const data = await res.json();
+      console.log("✅ Vault transfer success:", data);
 
-    //   const categoryFolder =
-    //     extensionCheck === "zip"
-    //       ? "Other"
-    //       : imageExtensions.includes(extensionCheck)
-    //       ? "Images"
-    //       : videoExtensions.includes(extensionCheck)
-    //       ? "Videos"
-    //       : audioExtensions.includes(extensionCheck)
-    //       ? "Audio"
-    //       : documentExtensions.includes(extensionCheck)
-    //       ? "Documents"
-    //       : "Other";
+      // optional: remove from queue after success
+      setTransfers((prev) => prev.filter((f) => f.path !== path));
 
-    //   const vaultFolders = `ArkVault/${categoryFolder}`;
-
-    //   await mkdir(vaultFolders, {
-    //     recursive: true,
-    //   });
-
-    //   const destination = `${vaultFolders}/${file.name}`;
-    //   await copyFile(file.path, destination);
-    // }
-
-    // console.log(`Sending ${path} to vault...`);
+      // tell the app vault changed
+      await emit("vault_updated");
+    } catch (e) {
+      console.error("❌ Vault transfer failed:", e);
+    } finally {
+      setSending((prev) => ({ ...prev, [path]: false }));
+    }
   };
-
   const handleRemoveFolder = (path: string) => {
     if (!path || !selectedFiles.includes(path)) return;
 
@@ -141,11 +130,10 @@ const TransferQueue: React.FC<TransferQueueProps> = ({
         {transfers.map((t, i) => (
           <div
             key={i}
-            className={`group relative overflow-hidden rounded-lg border border-cyan-400/10 p-3 transition-all duration-500 ${
-              t.progress === 100
+            className={`group relative overflow-hidden rounded-lg border border-cyan-400/10 p-3 transition-all duration-500 ${t.progress === 100
                 ? "bg-gradient-to-r from-emerald-500/10 to-green-400/5"
                 : "bg-gradient-to-r from-cyan-400/5 to-transparent hover:from-cyan-400/10"
-            }`}
+              }`}
           >
             <div className="flex justify-between items-center mb-1 sm:text-[0.50rem] lg:text-[0.70rem]">
               <div className="flex items-center sm:p-2 gap-2 text-cyan-200/90">
@@ -160,16 +148,16 @@ const TransferQueue: React.FC<TransferQueueProps> = ({
               </div>
 
               <span
-                className={`font-semibold ${
-                  t.progress === 100 ? "text-green-400" : "text-cyan-300"
-                }`}
+                className={`font-semibold ${t.progress === 100 ? "text-green-400" : "text-cyan-300"
+                  }`}
               >
                 {t.progress === 100 ? (
                   <button
+                    disabled={!!sending[t.path]}
                     onClick={() => handleSendToVault(t.path)}
-                    className="bg-cyan-400/20 px-3 py-1 rounded-md cursor-pointer border border-cyan-400/50 text-cyan-200 hover:bg-cyan-400/30 transition"
+                    className="bg-cyan-400/20 px-3 py-1 rounded-md cursor-pointer border border-cyan-400/50 text-cyan-200 hover:bg-cyan-400/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    ✅ Send To Vault
+                    {sending[t.path] ? "⏳ Sending..." : "✅ Send To Vault"}
                   </button>
                 ) : (
                   <span>{Math.floor(t.progress)}%</span>
@@ -179,11 +167,10 @@ const TransferQueue: React.FC<TransferQueueProps> = ({
 
             <div className="h-1.5 bg-cyan-400/10 rounded overflow-hidden">
               <div
-                className={`h-full rounded transition-all duration-700 ease-out ${
-                  t.progress === 100
+                className={`h-full rounded transition-all duration-700 ease-out ${t.progress === 100
                     ? "bg-green-400"
                     : "bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-300 animate-[pulse_2s_ease_in_out_infinite]"
-                }`}
+                  }`}
                 style={{ width: `${t.progress}%` }}
               />
             </div>

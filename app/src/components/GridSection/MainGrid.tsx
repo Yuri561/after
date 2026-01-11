@@ -74,10 +74,10 @@ const MainGrid: React.FC<{ loading: boolean }> = () => {
   return (
     <section className="flex-1 grid grid-cols-2 md:grid-cols-4 sm:grid-cols-2 grid-rows-2 gap-6 p-2 sm:p-8">
       <DropZone onFilesQueued={handleFileQue}/>
+      <TransferControls/>
       <TransferQueue transfers={transferQueue} setTransfers={setTransferQueue}/>
       <VaultRules/>
       <SystemMetrics/>
-      <TransferControls/>
       <WatcherMode/>
       <StorageMap/>
       <Ai/>

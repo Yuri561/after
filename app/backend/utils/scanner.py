@@ -37,7 +37,7 @@ def transfered_folder(path:str):
             name = os.path.basename(f)
             ext = os.path.splitext(name)[1].lower() or "[no ext]"
             rel = os.path.relpath(f, path)  # subdirectory inside the source folder
-            # destination path preview under ArkVault (adjust vault root if needed)
+            # destination path preview under vault
             dst = os.path.join("ark_vault", cat_name, name)
             print(f"• {name}  | ext={ext}")
             print(f"   src_subdir: {rel}")

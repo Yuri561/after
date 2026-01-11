@@ -20,7 +20,7 @@ const Sidebar: React.FC<{ setLoading: React.Dispatch<React.SetStateAction<boolea
 
   const items = [
     { label: "Dashboard", icon: <LayoutDashboard size={16} />, link: '/dashboard' },
-    { label: "Vaults", icon: <Folder size={16} />, link: '/vaults' },
+    { label: "Vault", icon: <Folder size={16} />, link: '/vaults' },
     { label: "Map", icon: <Map size={16} />, link: '/map' },
     { label: "Notifications", icon: <ActivitySquare size={16} />, link: '/activity' },
     { label: "Logs", icon: <FileText size={16} />, link: '/logs' },

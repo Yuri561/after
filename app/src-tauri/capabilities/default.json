@@ -1,17 +1,37 @@
 {
+
   "identifier": "default",
-  "windows": [
-    "main"
-  ],
+  "description": "Default capability for main window",
+  "windows": ["main"],
   "permissions": [
     "core:default",
     "core:event:default",
     "core:event:allow-listen",
+
     "dialog:default",
     "dialog:allow-open",
+
     "fs:default",
-    "fs:read-all",
-    "fs:write-all",
+    "fs:allow-read-dir",
+    "fs:allow-read-file",
+
+    {
+      "identifier": "fs:allow-read-dir",
+      "allow": [
+        { "path": "$DESKTOP/A.F.T.E.R" },
+        { "path": "$DESKTOP/A.F.T.E.R/**" },
+        { "path": "$HOME/OneDrive/Desktop/A.F.T.E.R" },
+        { "path": "$HOME/OneDrive/Desktop/A.F.T.E.R/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-read-file",
+      "allow": [
+        { "path": "$DESKTOP/A.F.T.E.R/**" },
+        { "path": "$HOME/OneDrive/Desktop/A.F.T.E.R/**" }
+      ]
+    },
+
     "opener:default"
   ]
 }

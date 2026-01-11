@@ -20,15 +20,15 @@ def vault_transfer_system(
     if mode not in ("copy", "move"):
         raise ValueError("mode must be 'copy' or 'move'.")
 
-    # 1) scan source folder -> dict
+    # 1) scan source folder  dict
     scan_result = transfered_folder(source_path)
     if not scan_result:
         raise FileNotFoundError(f"Source folder not found or not a directory: {source_path}")
 
-    # 2) create/get vault -> dict
+    # 2) create/get vault  dict
     vault_info = create_vault()
 
-    # 3) transfer -> report dict
+    # 3) transfer  report dict
     report = transfer_to_vault(
         scan_result=scan_result,
         vault_info=vault_info,

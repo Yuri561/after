@@ -1,9 +1,12 @@
 import React from "react";
 import { Cpu, HardDrive, ShieldCheck } from "lucide-react";
 import useCurrentTime from "../../Helpers/useCurrentTime";
+import { useOutletContext } from "react-router-dom";
 
 
 const Footer: React.FC = () => {
+  // const {cpu, disk} = useOutletContext<{cpu: number; disk: number;}>();
+  
   const time = useCurrentTime()
   return (
     <footer className="h-10 w-full flex items-center justify-between px-4 sm:px-8 border-t border-cyan-400/10 bg-gradient-to-r from-slate-900/60 via-cyan-900/10 to-slate-800/40 backdrop-blur-lg text-[0.7rem] sm:text-xs font-mono text-cyan-300/80 shadow-[0_0_20px_rgba(0,255,255,0.05)]">
@@ -11,11 +14,11 @@ const Footer: React.FC = () => {
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-1 text-cyan-400/80">
           <Cpu size={12} className="text-cyan-400" />
-          <span>CPU 32%</span>
+          {/* <span>{cpu}%</span> */}
         </div>
         <div className="flex items-center gap-1 text-cyan-400/80">
           <HardDrive size={12} className="text-cyan-400" />
-          <span>Disk 48%</span>
+          {/* <span>{disk}%</span> */}
         </div>
         <div className="flex items-center gap-1 text-green-400/80">
           <ShieldCheck

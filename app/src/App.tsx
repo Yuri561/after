@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+
 import { Routes, Route, useNavigate } from "react-router-dom"
 import StartUpScreen from "./components/StartUpScreen/StartUpScreen"
 import Dashboard from "./components/Pages/Dashboard"
@@ -28,11 +28,6 @@ import ActivityPage from "./components/Pages/Activity"
 const App = () => {
   const navigate = useNavigate()
 
-  // useEffect(() => {
-  //   (async () => {
-  //     await ensureVaultRoot();
-  //   })();
-  // }, []);
 
   return (
     <Routes>
