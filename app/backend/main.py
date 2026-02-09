@@ -3,7 +3,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.system import router as system_router
 from routes.vault_route import router as vault_route
+from routes.register_users import register_user
 import os
+from routes.register_users import router as register_router
+
 
 app = FastAPI()
 
@@ -22,6 +25,9 @@ app.include_router(system_router, prefix="/api")
 
 # vault router already has /api/vault 
 app.include_router(vault_route, prefix="/transfer")
+
+#adding signup route 
+app.include_router(register_router)
 
 @app.get("/")
 async def root():

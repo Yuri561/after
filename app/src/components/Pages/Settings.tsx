@@ -122,7 +122,7 @@ const SettingsPage: React.FC = () => {
         {/* About Section */}
         <div className="bg-white/5 border border-cyan-400/10 p-5 rounded-xl hover:bg-cyan-400/10 transition-all duration-500 shadow-[inset_0_0_25px_rgba(0,255,255,0.05)]">
           <h3 className="text-cyan-400 mb-3 flex items-center gap-2">
-            <Info size={14} /> About F.A.T.E
+            <Info size={14} /> About A.F.T.E.R
           </h3>
           <p className="text-cyan-300/70 text-[0.75rem] leading-relaxed">
             A.F.T.E.R (Automated File Transfer Engine & Repository) is a modular system for managing and automating

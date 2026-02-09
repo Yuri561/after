@@ -1,0 +1,10 @@
+.env
+requirements.txt
+__pycache__/
+*.pyc
+instance
+*.sqlite3
+.DS_Store
+.vscode/
+.idea/
+logs/

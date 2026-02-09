@@ -22,9 +22,10 @@
       {
         "label": "main",
         "title": "A.F.T.E.R",
-        "width": 1400,
-        "height": 1024,
-        "dragDropEnabled": true
+        "width": 1540,
+        "height": 1600,
+        "dragDropEnabled": true,
+        "fullscreen": false
       }
     ]
   },
